@@ -10,10 +10,8 @@ WEBSERVER_RELOAD=true
 ###WEBSERVER_DB_URL=postgresql://user:password@localhost:5432/advcmsdb
 WEBSERVER_DB_URL=sqlite:///advcms/db_sqlite/advcms_db.sqlite3
 
-
-GEMINI_API_KEY="Your_Gemini_API_Key_Here"
-
 AGENT_MODEL_FULL_NAME="gemini-flash-latest"
+GEMINI_API_KEY="Your_Gemini_API_Key_Here"
 #AGENT_MODEL_FULL_NAME="ollama_chat/gemma4"
 
 AGENT_APP_NAME="ad_agent_app"
