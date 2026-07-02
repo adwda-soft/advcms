@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block title %}{% if action == 'create' %}Create Post{% else %}Edit Post{% endif %} - ADVCMS{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js" referrerpolicy="origin"></script>
+<script src="{{ url_for('static', path='/js/advcms.js?1000') }}"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        tinymce.init({
+            selector: '#content',
+            skin: 'oxide-dark',
+            content_css: 'dark',
+            height: 500,
+            plugins: 'lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount',
+            toolbar: 'undo redo | blocks | bold italic backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | removeformat | help',
+            branding: false,
+            promotion: false,
+            setup: function (editor) {
+                editor.on('change', function () {
+                    editor.save();
+                });
+            }
+        });
+    });
+</script>
+<style>
+    .tox-tinymce {
+        border: 1px solid var(--panel-border) !important;
+        border-radius: 10px !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-panel glass-panel-wide" style="max-width: 1200px; margin: 0 auto; z-index: 10;">
+    <div style="border-bottom: 1px solid var(--panel-border); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+        <h1 style="font-size: 2rem; font-weight: 800; letter-spacing: -0.5px;">
+            {% if action == 'create' %}Create New Post{% else %}Edit Post{% endif %}
+        </h1>
+        <p style="color: var(--text-secondary); margin-top: 0.25rem;">
+            Fill out the form below to compile and publish content to your readers.
+        </p>
+    </div>
+
+    {% if error %}
+    <div
+        style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.95rem;">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="form-group">
+            <label class="form-label" for="title">Title</label>
+            <input type="text" id="title" name="title" class="form-control" placeholder="Enter post title" required
+                value="{% if post %}{{ post.title }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="category">Category (Optional)</label>
+            <input type="text" id="category" name="category" class="form-control"
+                placeholder="A brief description of the post"
+                value="{% if post %}{{ post.category or '' }}{% endif %}">
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="summary">Summary (Optional)</label>
+            <input type="text" id="summary" name="summary" class="form-control"
+                placeholder="A brief description of the post"
+                value="{% if post %}{{ post.summary or '' }}{% endif %}">
+        </div>
+
+        <div style="display:inline-block;">
+
+            <div class="form-group" style="display:inline; float:left; width: 68%; margin-right: 1rem;">
+                <label class="form-label" for="content">Content</label>
+                <textarea id="content" name="content" class="form-control" rows="25"
+                    placeholder="Write your post content here..." required
+                    style="resize: vertical; font-family: inherit; line-height: 1.6;">
+                    {% if post %}
+                        {{ post.content }}
+                    {% endif %}
+                </textarea>
+            </div>
+
+            <div class="form-group" style="display:inline; float:left; width: 28%; margin-right: 1rem;">
+                <div>
+                    <label class="form-label" for="agent_query">Agent Query</label>
+                    </p>
+                    <textarea id="agent_query" name="agent_query" class="form-control" rows="7"  cols="24"
+                        style="resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                </div>
+                <div>
+                    <label class="form-label" for="search_in_posts">Search Data in Posts</label>
+                    </p>
+                    <input type="checkbox" id="search_in_posts" name="search_in_posts" class="form-control" checked
+                        style="resize: vertical; font-family: inherit; line-height: 1.6;"></input>
+                </div>
+                <div>
+                    <label class="form-label" for="max_match_lookup">Matches to Analyze</label>
+                    </p>
+                    <input type="number" id="max_match_lookup" name="max_match_lookup" class="form-control" min="1" max="1000" value="3"
+                        style="resize: vertical; font-family: inherit; line-height: 1.6;"></input>
+                </div>
+                <div>
+                    <button type="button" id="agent_query_btn" class="btn-query"
+                        style="padding: 0.3rem 0.3rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                        Query
+                    </button>
+                </div>
+                <div>
+                    <label class="form-label" for="agent_response">Agent Response</label>
+                    </p>
+                    <textarea id="agent_response" name="agent_response" class="form-control" rows="12" cols="24"
+                        style="resize: vertical; font-family: inherit; line-height: 1.6;"></textarea>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="media">Media File (Optional)</label>
+            <input type="file" id="media" name="media" class="form-control" accept="image/*,video/*,audio/*,.pdf">
+            <small style="color: var(--text-secondary); display: block; margin-top: 0.35rem;">Upload an image, video,
+                audio file, or PDF to attach to this post.</small>
+            {% if post and post.media_url %}
+            <div style="margin-top: 0.75rem; color: var(--text-secondary);">
+                Current media: <a href="{{ post.media_url }}" target="_blank" style="color: var(--accent-glow);">{{
+                    post.media_url }}</a>
+            </div>
+            <label
+                style="display: inline-flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; color: var(--text-secondary);">
+                <input type="checkbox" name="remove_media" value="1">
+                Remove current media file
+            </label>
+            {% endif %}
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="status">Publication Status</label>
+            <select id="status" name="status" class="form-control"
+                style="background: rgba(15, 23, 42, 0.8); cursor: pointer;">
+                <option value="draft" {% if post and post.status=='draft' %}selected{% endif %}>Draft (Invisible to
+                    public)</option>
+                <option value="published" {% if post and post.status=='published' %}selected{% endif %}>Published (Live
+                    immediately)</option>
+            </select>
+        </div>
+
+        <div
+            style="display: flex; justify-content: flex-end; gap: 1rem; margin-top: 1rem; border-top: 1px solid var(--panel-border); padding-top: 1.5rem;">
+            <a href="/dashboard" class="btn-secondary"
+                style="display: inline-block; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px; font-weight: 600; text-align: center; cursor: pointer;">
+                Cancel
+            </a>
+            <button type="submit" class="btn-primary"
+                style="padding: 0.75rem 1.5rem; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                {% if action == 'create' %}Publish / Save{% else %}Save Changes{% endif %}
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    initAgentQuery();
+</script>
+{% endblock %}

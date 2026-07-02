@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Home - ADVCMS{% endblock %}
+
+{% block content %}
+<div style="display: flex; flex-direction: column; gap: 4rem; width: 100%; max-width: 1000px; margin: 0 auto; z-index: 10;">
+    <div class="hero-content" style="text-align: center; margin-top: 2rem;">
+
+        <h3 class="hero-title">ADVCMS</span></h3>
+        <h3 class="hero-title">Agentic, Dynamic, Visual</span></h3>
+        <h3 class="hero-title">Content Management System</span></h3>
+        <p class="hero-desc">Experience an ultra-fast, Starlette and SQLAlchemy backed content management system built with Python's ASGI and modern design.</p>
+        <div class="cta-group" style="justify-content: center;">
+            {% if request.user.is_authenticated %}
+                <a href="/dashboard" class="btn-primary btn-cta">Go to Dashboard</a>
+            {% else %}
+                <a href="/login" class="btn-primary btn-cta">Get Started</a>
+                <a href="/register" class="btn-secondary">Create Account</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="blog-section" style="display: flex; flex-direction: column; gap: 2rem;">
+        <h2 style="font-size: 2rem; font-weight: 700; border-bottom: 1px solid var(--panel-border); padding-bottom: 1rem;">
+            Latest Posts
+        </h2>
+        {% if posts %}
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+                {% for post in posts %}
+                    <div class="card" style="display: flex; flex-direction: column; justify-content: space-between; height: 100%; border: 1px solid var(--panel-border); background: var(--panel-bg); border-radius: 12px; padding: 1.5rem; transition: transform 0.2s, border-color 0.2s; cursor: pointer;" onclick="window.location.href='/post/{{ post.slug }}'">
+                        <div>
+                            <span style="font-size: 0.8rem; color: var(--accent-glow); font-weight: 600; text-transform: uppercase;">By {{ post.author_name }}</span>
+                            <h3 style="font-size: 1.4rem; margin-top: 0.5rem; margin-bottom: 0.75rem; font-weight: 700; line-height: 1.3;">
+                                <a href="/post/{{ post.slug }}" style="color: inherit; text-decoration: none;">{{ post.title }}</a>
+                            </h3>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                                {{ post.category or (post.content | striptags | truncate(120)) }}
+                            </p>
+                            <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.5; margin-bottom: 1.5rem;">
+                                {{ post.summary or (post.content | striptags | truncate(120)) }}
+                            </p>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 1rem; font-size: 0.85rem; color: var(--text-secondary);">
+                            <span>{{ post.created_at }}</span>
+                            <span style="color: var(--accent-secondary); font-weight: 600;">Read More &rarr;</span>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 4rem 2rem; background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 12px; color: var(--text-secondary);">
+                <p style="font-size: 1.1rem;">No posts published yet. Be the first to share your thoughts!</p>
+                {% if request.user.is_authenticated %}
+                    <a href="/dashboard/new" class="btn-primary" style="display: inline-block; margin-top: 1.5rem; text-decoration: none; padding: 0.75rem 1.5rem; border-radius: 8px;">Create a Post</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

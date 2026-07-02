@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}View Post - ADVCMS{% endblock %}
+
+{% block head %}
+<style>
+    .rich-content h1, .rich-content h2, .rich-content h3, .rich-content h4 {
+        color: var(--text-primary);
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+    .rich-content p {
+        margin-bottom: 1.25rem;
+        color: var(--text-secondary);
+    }
+    .rich-content ul, .rich-content ol {
+        margin-bottom: 1.25rem;
+        padding-left: 1.5rem;
+        color: var(--text-secondary);
+    }
+    .rich-content li {
+        margin-bottom: 0.5rem;
+    }
+    .rich-content a {
+        color: var(--accent-glow);
+        text-decoration: underline;
+    }
+    .rich-content strong {
+        color: var(--text-primary);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="glass-panel glass-panel-wide" style="max-width: 800px; margin: 0 auto; padding: 2.5rem; z-index: 10;">
+    <div style="margin-bottom: 2rem;">
+        <a href="/" style="color: var(--text-secondary); text-decoration: none; font-size: 0.9rem; font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem; margin-bottom: 1.5rem; transition: color 0.2s;">
+            &larr; Back to Posts
+        </a>
+        <h1 style="font-size: 2.5rem; font-weight: 800; line-height: 1.25; margin-bottom: 1rem; letter-spacing: -0.5px;">
+            {{ post.title }}
+        </h1>
+        <div style="display: flex; align-items: center; gap: 1rem; font-size: 0.9rem; color: var(--text-secondary); border-bottom: 1px solid var(--panel-border); padding-bottom: 1.5rem;">
+            <span>By <strong style="color: var(--text-primary);">{{ post.author_name }}</strong></span>
+            <span>&bull;</span>
+            <span>Published on {{ post.created_at }}</span>
+            {% if request.user.is_authenticated and request.user.id == post.author_id %}
+                <span>&bull;</span>
+                <a href="/dashboard/edit/{{ post.id }}" style="color: var(--accent-glow); text-decoration: none; font-weight: 600;">Edit Post</a>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if post.category %}
+        <div style="font-size: 1.2rem; line-height: 1.6; color: var(--text-primary); font-style: italic; margin-bottom: 2rem; padding-left: 1rem; border-left: 3px solid var(--accent-glow);">
+            {{ post.category }}
+        </div>
+    {% endif %}
+
+    {% if post.summary %}
+        <div style="font-size: 1.2rem; line-height: 1.6; color: var(--text-primary); font-style: italic; margin-bottom: 2rem; padding-left: 1rem; border-left: 3px solid var(--accent-glow);">
+            {{ post.summary }}
+        </div>
+    {% endif %}
+
+    {% if post.media_url %}
+        <div style="margin-bottom: 2rem;">
+            {% set media_suffix = post.media_url.split('.')[-1].lower() %}
+            {% if media_suffix in ['png','jpg','jpeg','gif','webp','svg'] %}
+                <img src="{{ post.media_url }}" alt="Attached media" style="width: 100%; border-radius: 12px; border: 1px solid var(--panel-border);">
+            {% elif media_suffix in ['mp4','webm','ogg'] %}
+                <video controls style="width: 100%; border-radius: 12px; border: 1px solid var(--panel-border);">
+                    <source src="{{ post.media_url }}" type="video/{{ media_suffix }}">
+                </video>
+            {% elif media_suffix in ['mp3','wav','ogg'] %}
+                <audio controls style="width: 100%;">
+                    <source src="{{ post.media_url }}" type="audio/{{ media_suffix }}">
+                </audio>
+            {% else %}
+                <a href="{{ post.media_url }}" target="_blank" style="display: inline-block; color: var(--accent-glow); text-decoration: none; font-weight: 600;">Open attached media</a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+    <div class="rich-content" style="font-size: 1.1rem; line-height: 1.8; color: var(--text-primary);">
+        {{ post.content | safe }}
+    </div>
+</div>
+{% endblock %}

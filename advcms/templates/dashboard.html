@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - ADVCMS{% endblock %}
+
+{% block content %}
+<div class="glass-panel glass-panel-wide">
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 1.5rem; margin-bottom: 2rem;">
+        <div>
+            <h1 style="font-size: 2.2rem; font-weight: 800; letter-spacing: -0.5px;">Dashboard</h1>
+            <p style="color: var(--text-secondary); margin-top: 0.25rem;">Welcome back, <span class="gradient-text" style="font-weight: 700;">{{ request.user.username }}</span>!</p>
+        </div>
+        <div>
+            <a href="/dashboard/new" class="btn-primary" style="display: inline-block; text-decoration: none; padding: 0.6rem 1.25rem; border-radius: 8px; font-weight: 600; font-size: 0.9rem;">
+                + Create New Post
+            </a>
+        </div>
+    </div>
+
+    <div style="margin-bottom: 2rem;">
+        <h2 style="font-size: 1.4rem; font-weight: 700; margin-bottom: 1rem; color: var(--text-primary);">Your Posts</h2>
+        {% if posts %}
+            <div style="overflow-x: auto; background: rgba(15, 23, 42, 0.3); border-radius: 12px; border: 1px solid var(--panel-border);">
+                <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--panel-border); background: rgba(15, 23, 42, 0.5);">
+                            <th style="padding: 1rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">Title</th>
+                            <th style="padding: 1rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">Status</th>
+                            <th style="padding: 1rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; text-transform: uppercase;">Created</th>
+                            <th style="padding: 1rem; color: var(--text-secondary); font-size: 0.85rem; font-weight: 600; text-transform: uppercase; text-align: right;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for post in posts %}
+                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s;">
+                                <td style="padding: 1rem;">
+                                    <div style="font-weight: 600; color: var(--text-primary);">{{ post.title }}</div>
+                                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.2rem;">/post/{{ post.slug }}</div>
+                                </td>
+                                <td style="padding: 1rem;">
+                                    {% if post.status == 'published' %}
+                                        <span style="display: inline-block; padding: 0.25rem 0.6rem; background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
+                                            Published
+                                        </span>
+                                    {% else %}
+                                        <span style="display: inline-block; padding: 0.25rem 0.6rem; background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fef3c7; border-radius: 6px; font-size: 0.75rem; font-weight: 600; text-transform: uppercase;">
+                                            Draft
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                <td style="padding: 1rem; color: var(--text-secondary); font-size: 0.9rem;">
+                                    {{ post.created_at }}
+                                </td>
+                                <td style="padding: 1rem; text-align: right;">
+                                    <a href="/post/{{ post.slug }}" class="btn-secondary" style="display: inline-block; padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; border-radius: 6px; margin-right: 0.5rem;" target="_blank">View</a>
+                                    <a href="/dashboard/edit/{{ post.id }}" class="btn-primary" style="display: inline-block; padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; border-radius: 6px; margin-right: 0.5rem;">Edit</a>
+                                    <a href="/dashboard/delete/{{ post.id }}" class="btn-secondary" style="display: inline-block; padding: 0.4rem 0.8rem; font-size: 0.8rem; text-decoration: none; border-radius: 6px; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #fca5a5;" onclick="return confirm('Are you sure you want to delete this post?');">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem 2rem; background: rgba(15, 23, 42, 0.2); border: 1px solid var(--panel-border); border-radius: 12px; color: var(--text-secondary);">
+                <p>You haven't created any posts yet.</p>
+                <a href="/dashboard/new" class="btn-primary" style="display: inline-block; margin-top: 1rem; text-decoration: none; padding: 0.5rem 1rem; border-radius: 6px;">Create your first post</a>
+            </div>
+        {% endif %}
+    </div>
+
+    <div style="border-top: 1px solid var(--panel-border); padding-top: 1.5rem; color: var(--text-secondary); font-size: 0.9rem;">
+        Logged in as: <strong style="color: var(--text-primary);">{{ request.user.username }}</strong> (User ID: {{ request.user.id }})
+    </div>
+</div>
+{% endblock %}
