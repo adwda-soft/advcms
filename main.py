@@ -23,8 +23,24 @@ def main():
     
     app_chromaconnector.SetPersistDirectory(os.path.dirname(__file__))
     asyncio.run(app_chromaconnector.setup())
-    uvicorn.run("main:app", host=app_settings.WEBSERVER_HOST, port=app_settings.WEBSERVER_PORT, reload=app_settings.WEBSERVER_RELOAD)
     
+    if app_settings.WEBSERVER_SECURE_ENABLED:
+        uvicorn.run(
+            "main:app", 
+            host=app_settings.WEBSERVER_HOST,
+            port=app_settings.WEBSERVER_SECURE_PORT,
+            reload=app_settings.WEBSERVER_RELOAD,
+            ssl_certfile=app_settings.WEBSERVER_SSL_CERT_FILE,
+            ssl_keyfile=app_settings.WEBSERVER_SSL_KEY_FILE
+            )
+    else:
+        uvicorn.run(
+            "main:app",
+            host=app_settings.WEBSERVER_HOST,
+            port=app_settings.WEBSERVER_PORT,
+            reload=app_settings.WEBSERVER_RELOAD
+            )
+
 if __name__ == "__main__":
     main()
     
